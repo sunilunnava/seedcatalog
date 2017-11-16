@@ -1,0 +1,60 @@
+{
+	"name": "AJSC",
+	"description":"The AJSC Seeed.",
+	"inputDescriptor": {
+		"inputSection": [{
+
+			"name": "MavenRquiredProperties",
+			"displayName": "Basic Service Data",
+
+			"input": [{
+				"name": "serviceArtifact",
+				"displayname": "Service Name",
+				"description": "The Artifactid of the Maven project, you can choose whatever name you want with lowercase letters and no strange symbols.  The Artifactid will be used to create the repo and also the Jenkins Job.  For more information, please visit  : https://maven.apache.org/guides/mini/guide-naming-conventions.html",
+				"required": "true",
+				"defaultValue": "",
+				"type": "String",
+				"validationregexp": "[a-z]([-a-z0-9]*[a-z0-9])",
+				"regexhelptext":"Service Name should not contain any special char, Upper case letters and should not start with a number."
+				
+
+			},{
+				"name": "serviceGroup",
+				"displayname": "Service Group",
+				"description": "The GroupID of the Maven project, groupid will identify your project uniquely across all project.  For more information, please visit : https://maven.apache.org/guides/mini/guide-naming-conventions.html",
+				"required": "true",
+				"defaultValue": "",
+				"type": "String",
+				"validationregexp": "^[a-z][a-z0-9.]",
+				"regexhelptext":"serviceGroup should not contain any special char and Upper case letters.Supports only lower case alpanumeric and ."
+				
+
+			},{
+				"name": "servicePackage",
+				"displayname": "Service package",
+				"description": "Service package to define the source package folder",
+				"required": "true",
+				"defaultValue": "",
+				"type": "String",
+				"validationregexp": "^[a-z][a-z0-9.]",
+				"regexhelptext":"servicePackage should not contain any special char and Upper case letters.Supports only lower case alpanumeric and ."
+				
+				
+
+			}, {
+				"name": "context-root",
+				"displayname": "context root",
+				"description": "Context root of the generated service. /<context-root>",
+				"required": "true",
+				"defaultValue": "/restservices/helloworld/v1",
+				"type": "String",
+				"validationregexp": "[a-z0-9/]",
+				"regexhelptext":"context-root value should have prefix or suffix  appended with / and supports numbers and lower case letters only."
+			}]
+		}]
+	},
+	"tags": {
+		"type": "java"
+	}
+
+}
