@@ -11,7 +11,7 @@ SERVICE_NAME=$1
 # maven archetype
 export ARCHETYPE_GROUP=com.att.ajsc
 export ARCHETYPE_ARTIFACT=sdk-java-jersey-archetype
-export ARCHETYPE_VERSION=6.3.3.8-oss.1
+export ARCHETYPE_VERSION=6.3.3.8.oss.1
 
 
 
