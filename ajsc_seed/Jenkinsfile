@@ -5,12 +5,11 @@ properties([[$class: 'ParametersDefinitionProperty', parameterDefinitions: [
 [$class: 'hudson.model.StringParameterDefinition', name: 'PHASE', defaultValue: "BUILD"],
 [$class: 'hudson.model.StringParameterDefinition', name: 'TARGET_ENV', defaultValue: "DEV"],
 [$class: 'hudson.model.StringParameterDefinition', name: 'K8S_CLUSTER_URL',defaultValue: ""],
-[$class: 'hudson.model.StringParameterDefinition', name: 'K8S_CONTEXT',defaultValue: "default"],
 [$class: 'hudson.model.StringParameterDefinition', name: 'K8S_USERNAME',defaultValue: ""],
 [$class: 'hudson.model.PasswordParameterDefinition', name: 'K8S_PASSWORD',defaultValue: ""],
-[$class: 'hudson.model.StringParameterDefinition', name: 'K8S_NAME',defaultValue: ""],
 [$class: 'hudson.model.StringParameterDefinition', name: 'K8S_PODS_REPLICAS',defaultValue: "1"],
-[$class: 'hudson.model.StringParameterDefinition', name: 'K8S_SERVICE_ACCOUNT',defaultValue: "default"]   
+[$class: 'hudson.model.StringParameterDefinition', name: 'K8S_SERVICE_ACCOUNT',defaultValue: "default"],
+[$class: 'hudson.model.StringParameterDefinition', name: 'K8S_CONTEXT',defaultValue: "default"] 
 ]]]) 
 
 /**
@@ -21,22 +20,22 @@ properties([[$class: 'ParametersDefinitionProperty', parameterDefinitions: [
 
 echo "Build branch: ${env.BRANCH_NAME}"
 
-node("docker") {
+node() {
 	stage 'Checkout'
 	checkout scm
 	
 	pom = readMavenPom file: 'pom.xml'
 	PROJECT_NAME = pom.groupId ?: pom.parent.groupId+ ":" + pom.artifactId;
 	SERVICE_NAME=pom.artifactId;
-	VERSION=pom.version;
+	VERSION=pom.version
 	LABEL_VERSION=pom.version.replaceAll(".", "-");
 	echo "LabelVerion: " + LABEL_VERSION
 	NAMESPACE=pom.groupId ?: pom.parent.groupId;
 	KUBE_NAMESPACE=pom.properties['kube.namespace']
-	IMAGE_NAME=pom.properties['docker.registry']+"/"+NAMESPACE+"/"+pom.artifactId+":latest"
+	IMAGE_NAME="cdposs"+"/"+pom.artifactId+":latest"
 	echo "Artifact: " + PROJECT_NAME
-	// env.DOCKER_HOST="tcp://localhost:4243"
-    // env.DOCKER_CONFIG="${WORKSPACE}/.docker"
+	env.DOCKER_HOST="tcp://localhost:4243"
+    env.DOCKER_CONFIG="${WORKSPACE}/.docker"
 	def branchName
 	
 	// Create kubectl.conf  file here from Pipeline properties provided.
@@ -88,9 +87,10 @@ node("docker") {
                         "LABEL_VERSION=${LABEL_VERSION}",
                         "REPLICA_COUNT=${K8S_PODS_REPLICAS}",
                         "SERVICE_ACCOUNT=${K8S_SERVICE_ACCOUNT}",
-                        "KUBECTL=/opt/app/kubernetes/v1.3.4/bin/kubectl",
+                        "KUBECTL=/usr/local/sbin/kubectl",
                         "KUBECTL_OPTS=--server=${K8S_CLUSTER_URL} --insecure-skip-tls-verify=true  --password=${K8S_PASSWORD}  --username=${K8S_USERNAME}"
 						]) {
+							
 						sh "./k8s/deploy.sh"
 					}
 				}
@@ -107,9 +107,10 @@ node("docker") {
                         "REPLICA_COUNT=${K8S_PODS_REPLICAS}",
                         "IMAGE_NAME=${IMAGE_NAME}",
                         "SERVICE_ACCOUNT=${K8S_SERVICE_ACCOUNT}",
-                        "KUBECTL=/opt/app/kubernetes/v1.3.4/bin/kubectl",
+                        "KUBECTL=/usr/local/sbin/kubectl",
                         "KUBECTL_OPTS=--server=${K8S_CLUSTER_URL} --insecure-skip-tls-verify=true --password=${K8S_PASSWORD}  --username=${K8S_USERNAME}"
 						]) {
+						sh "sudo su root"
 						sh "./k8s/deploy.sh"
 					}
 				}
